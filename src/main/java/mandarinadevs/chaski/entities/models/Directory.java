@@ -1,24 +1,23 @@
-package mandarinadevs.chaski.entities;
+package mandarinadevs.chaski.entities.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
+@Document(collection = "directory")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@Table(name = "etc_directory")
 public class Directory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer owner;
-    private Integer contact;
+    private String id;
+    private String owner;
+    private String contact;
     private LocalDateTime insertionDate;
 }

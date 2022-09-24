@@ -1,51 +1,59 @@
 package mandarinadevs.chaski.controllers;
 
-import mandarinadevs.chaski.entities.Message;
+import io.github.jav.exposerversdk.PushClientException;
+import mandarinadevs.chaski.entities.models.Message;
 import mandarinadevs.chaski.services.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
-@RequestMapping(value = "/messages")
+@RequestMapping(value = "/api/messages", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class MessageController {
     @Autowired
-    MessageService messageService;
+    private MessageService messageService;
 
     @GetMapping(value = "")
-    public List<Message> getAll() {
+    public Flux<Message> getAll() {
         return messageService.getAll();
     }
 
     @GetMapping(value = "/{id}")
-    public Message getById(@PathVariable Integer id) {
+    public Mono<Message> getById(@PathVariable String id) {
         return messageService.getById(id);
     }
 
     @PostMapping(value = "")
-    public Message save(@RequestBody Message message) {
+    public Mono<Message> save(@RequestBody Message message) {
         return messageService.save(message);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable String id) {
         messageService.delete(id);
     }
 
-    @PostMapping(value = "/conversation")
-    public List<Message> getConversation(@RequestBody List<Integer> messageIds) {
-        return messageService.getConversation(messageIds);
+    @PostMapping(value = "/conversation/{from}/{to}")
+    public Flux<Message> getConversation(
+            @RequestBody List<String> participants,
+            @PathVariable Integer from,
+            @PathVariable Integer to
+    ) {
+        return messageService.getConversation(participants, from, to);
     }
 
-    @GetMapping(value = "/also")
-    public Stream<Message> also() {
-        List<Message> list = messageService.getAll();
-        return Stream
-                .of(new Message(1,"asd", LocalDateTime.now()));
+    @PostMapping(value = "/send-message")
+    public ResponseEntity<?> sendMessage(@RequestBody Message message) {
+        try {
+            return ResponseEntity.ok().body(messageService.sendMessage(message));
+        } catch (PushClientException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

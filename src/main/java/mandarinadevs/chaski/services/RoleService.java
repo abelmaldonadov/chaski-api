@@ -1,29 +1,29 @@
 package mandarinadevs.chaski.services;
 
-import mandarinadevs.chaski.entities.Role;
+import mandarinadevs.chaski.entities.models.Role;
 import mandarinadevs.chaski.repositories.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class RoleService {
     @Autowired
-    RoleRepo roleRepo;
+    private RoleRepo roleRepo;
 
-    public List<Role> getAll() {
-        return (List<Role>) roleRepo.findAll();
+    public Flux<Role> getAll() {
+        return roleRepo.findAll();
     }
-    public Role getById(Integer id) {
-        Optional<Role> optional = roleRepo.findById(id);
-        return optional.orElse(null);
+
+    public Mono<Role> getById(String id) {
+        return roleRepo.findById(id);
     }
-    public Role save(Role role) {
+    public Mono<Role> save(Role role) {
         return roleRepo.save(role);
     }
-    public void delete(Integer id) {
+
+    public void delete(String id) {
         roleRepo.deleteById(id);
     }
 }

@@ -1,26 +1,23 @@
-package mandarinadevs.chaski.entities;
+package mandarinadevs.chaski.entities.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
+@Document(collection = "roles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@Table(name = "my_people")
-public class Person {
+public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String username;
-    private String password;
+    private String id;
     private String name;
-    private Integer state;
+    private String description;
     private LocalDateTime insertionDate;
 }

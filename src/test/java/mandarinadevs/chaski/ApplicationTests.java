@@ -2,10 +2,14 @@ package mandarinadevs.chaski;
 
 import lombok.extern.slf4j.Slf4j;
 import mandarinadevs.chaski.controllers.*;
-import mandarinadevs.chaski.entities.*;
+import mandarinadevs.chaski.entities.models.Directory;
+import mandarinadevs.chaski.entities.models.Message;
+import mandarinadevs.chaski.entities.models.Person;
+import mandarinadevs.chaski.entities.models.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 
@@ -19,11 +23,7 @@ class ApplicationTests {
     @Autowired
     PersonController personController;
     @Autowired
-    RoleByPersonController roleByPersonController;
-    @Autowired
     RoleController roleController;
-    @Autowired
-    ShippingController shippingController;
 
     @Test
     void contextLoads() {
@@ -32,24 +32,25 @@ class ApplicationTests {
     @Test
     void directoryTest() {
         Directory testDirectory = new Directory();
-        testDirectory.setOwner(1);
-        testDirectory.setContact(2);
+        testDirectory.setOwner("testOwner");
+        testDirectory.setContact("testContact");
         testDirectory.setInsertionDate(LocalDateTime.now());
 
-        directoryController.save(testDirectory);
-        directoryController.getById(testDirectory.getId());
-        directoryController.delete(testDirectory.getId());
+        StepVerifier.create(directoryController.save(testDirectory))
+            .expectNext(testDirectory)
+            .expectComplete()
+            .verify();
     }
 
     @Test
     void messageTest() {
         Message testMessage = new Message();
+        testMessage.setSender("testSender");
         testMessage.setContent("Test Content");
+        testMessage.setReceptor("testReceptor");
         testMessage.setInsertionDate(LocalDateTime.now());
 
-        messageController.save(testMessage);
-        messageController.getById(testMessage.getId());
-        messageController.delete(testMessage.getId());
+        messageController.save(testMessage).subscribe(p -> log.info(p.toString()));
     }
 
     @Test
@@ -58,7 +59,7 @@ class ApplicationTests {
         testPerson.setUsername("usertest");
         testPerson.setPassword("12345");
         testPerson.setName("User Test");
-        testPerson.setState(1);
+        testPerson.setState(true);
         testPerson.setInsertionDate(LocalDateTime.now());
 
         personController.save(testPerson);
@@ -67,40 +68,15 @@ class ApplicationTests {
     }
 
     @Test
-    void roleByPersonTest() {
-        RoleByPerson testRoleByPerson = new RoleByPerson();
-        testRoleByPerson.setPerson(1);
-        testRoleByPerson.setRole(1);
-
-        roleByPersonController.save(testRoleByPerson);
-        roleByPersonController.getById(testRoleByPerson.getId());
-        roleByPersonController.delete(testRoleByPerson.getId());
-    }
-
-    @Test
     void roleTest() {
         Role testRole = new Role();
         testRole.setName("Test Role");
         testRole.setDescription("Test Role Description");
-        testRole.setState(1);
         testRole.setInsertionDate(LocalDateTime.now());
 
         roleController.save(testRole);
         roleController.getById(testRole.getId());
         roleController.delete(testRole.getId());
-    }
-
-    @Test
-    void shippingTest() {
-        Shipping testShipping = new Shipping();
-        testShipping.setSender(1);
-        testShipping.setMessage(1);
-        testShipping.setReceptor(2);
-        testShipping.setInsertionDate(LocalDateTime.now());
-
-        shippingController.save(testShipping);
-        shippingController.getById(testShipping.getId());
-        shippingController.delete(testShipping.getId());
     }
 
 }
